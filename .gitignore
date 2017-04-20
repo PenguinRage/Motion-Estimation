@@ -7,4 +7,5 @@ application.windows64
 application.macosx
 *.tif
 *.mov
+*.avi
 *.mp3
