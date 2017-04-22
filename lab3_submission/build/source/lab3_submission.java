@@ -14,35 +14,47 @@ import java.io.IOException;
 
 public class lab3_submission extends PApplet {
 
-PImage img_current;
-PImage img_next;
+PImage current;
+PImage next;
 PImage current_grey;
 PImage next_grey;
-String img_url_current;
-String img_url_next;
 
-int total_number_of_frame = 100;
-int count = 0;
-int load = 0;
+int total_number_of_frames = 700;
+int frame_number = 0;
 
+int WIDTH = 720;
+int HEIGHT = 576;
 int BLOCK_SIZE = 5;
-int WIDTH = 640;
-int HEIGHT = 360;
 
 public void setup()
 {
+  // Load the first pre-saved image
+  current = loadImage(sketchPath("") + "monkey/"+nf(frame_number,4) + ".tif");
+  current_grey = createImage(WIDTH, HEIGHT, RGB);
+  for(int h = 0; h < HEIGHT; h++)
+  {
+      for(int w = 0; w < WIDTH; w++)
+      {
+          int loc = w + h * WIDTH;
+
+          float r1 = red(current.pixels[loc]) * 0.21267f;
+          float g1 = green(current.pixels[loc]) * 0.715160f;
+          float b1 = blue(current.pixels[loc]) * 0.072169f;
+          int grey1 = color(r1 + g1 + b1);
+          current_grey.pixels[loc] = grey1;
+      }
+  }
+
     
 }
 
 public void draw()
 {
     // Check if all frames have used, prevent OutOfBoundException
-    if (load < total_number_of_frame)
+    if (frame_number < total_number_of_frames)
     {
-        // Get pre-saved frame images directory
-        img_current = loadImage(sketchPath("") + "bird/"+nf(load,4) + ".tif");
-        img_next = loadImage(sketchPath("") + "bird/"+nf(load+1,4) + ".tif");
-        current_grey = createImage(WIDTH, HEIGHT, RGB);
+      // Get the next images
+        next = loadImage(sketchPath("") + "monkey/"+nf(frame_number + 1,4) + ".tif");
         next_grey = createImage(WIDTH, HEIGHT, RGB);
 
         // grey scale the images
@@ -52,15 +64,9 @@ public void draw()
             {
                 int loc = w + h * WIDTH;
 
-                float r1 = red(img_current.pixels[loc]) * 0.21267f;
-                float g1 = green(img_current.pixels[loc]) * 0.715160f;
-                float b1 = blue(img_current.pixels[loc]) * 0.072169f;
-                int grey1 = color(r1 + g1 + b1);
-                current_grey.pixels[loc] = grey1;
-
-                float r2 = red(img_next.pixels[loc]) * 0.21267f;
-                float g2 = green(img_next.pixels[loc]) * 0.715160f;
-                float b2 = blue(img_next.pixels[loc]) * 0.072169f;
+                float r2 = red(next.pixels[loc]) * 0.21267f;
+                float g2 = green(next.pixels[loc]) * 0.715160f;
+                float b2 = blue(next.pixels[loc]) * 0.072169f;
                 int grey2 = color(r2 + g2 + b2);
                 next_grey.pixels[loc] = grey2;
             }
@@ -113,16 +119,22 @@ public void draw()
                         // highlight the best match
                         //stroke(255);
                         //line(current_center_x, current_center_y, best_match_x, best_match_y);
-                        img_current.pixels[best_match] = color(255);
+                        current.pixels[best_match] = color(255);
                     }
                 }
             }
         }
+        // Show image for display
+        image(current, 0, 0);
         // Set directory
-        saveFrame(sketchPath("") + "bird_result/"+nf(load, 4) + ".tif");
-
-        image(img_current, 0, 0);
-        load++;
+        saveFrame(sketchPath("") + "monkey_result/"+nf(frame_number, 4) + ".tif");
+        current = next;
+        current_grey = next_grey;
+        frame_number++;
+     }
+     else
+     {
+       exit();
      }
  }
 
@@ -165,7 +177,7 @@ public double calc_ssd(int block1[], int block2[])
     ssd = Math.sqrt(ssd);
     return ssd;
 }
-  public void settings() {  size(640, 360); }
+  public void settings() {  size(720, 576); }
   static public void main(String[] passedArgs) {
     String[] appletArgs = new String[] { "lab3_submission" };
     if (passedArgs != null) {
