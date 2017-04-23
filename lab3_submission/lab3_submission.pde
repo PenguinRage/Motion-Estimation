@@ -76,14 +76,12 @@ void draw()
       {
         // for each of the block area in current frame
         int current_block[] = macroblock_areas(w, h);
-        //int current_center_x = w + BLOCK_SIZE / 2;
-        //int current_center_y = h + BLOCK_SIZE / 2;
+
         double min_ssd = -1;
 
         // from all other block areas in next frame, find best match
         int best_match = 0;
-        //int best_match_x = 0;
-        //int best_match_y = 0;
+
         for(int tmp_h = 0; tmp_h < HEIGHT - BLOCK_SIZE; tmp_h += BLOCK_SIZE)
         {
           for(int tmp_w = 0; tmp_w < WIDTH - BLOCK_SIZE; tmp_w += BLOCK_SIZE)
@@ -102,20 +100,14 @@ void draw()
             {
               min_ssd = tmp;
               best_match = (tmp_h + BLOCK_SIZE / 2) * WIDTH + (tmp_w + BLOCK_SIZE / 2);
-              //best_match_x = tmp_w + BLOCK_SIZE / 2;
-              //best_match_y = tmp_h + BLOCK_SIZE / 2;
             }
             else if(tmp < min_ssd)         // if has smaller ssd, set to min_ssd
             {
               min_ssd = tmp;
               best_match = (tmp_h + BLOCK_SIZE / 2) * WIDTH + (tmp_w + BLOCK_SIZE / 2);
-              //best_match_x = tmp_w + BLOCK_SIZE / 2;
-              //best_match_y = tmp_h + BLOCK_SIZE / 2;
             }
 
             // highlight the best match
-            //stroke(255);
-            //line(current_center_x, current_center_y, best_match_x, best_match_y);
             current.pixels[best_match] = color(255);
           }
         }
@@ -165,7 +157,6 @@ color[] macroblock_areas(int x, int y)
 {
   color block[] = new color[BLOCK_SIZE * BLOCK_SIZE];
   int pos = 0;
-  // Copy the pixels to bloc
   for(int h = y; h < BLOCK_SIZE + y; h++)
   {
     for(int w = x; w < BLOCK_SIZE + x; w++)

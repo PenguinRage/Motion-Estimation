@@ -181,7 +181,6 @@ public int[] macroblock_areas(int x, int y)
 {
   int block[] = new int[BLOCK_SIZE * BLOCK_SIZE];
   int pos = 0;
-  // Copy the pixels to bloc
   for(int h = y; h < BLOCK_SIZE + y; h++)
   {
     for(int w = x; w < BLOCK_SIZE + x; w++)
