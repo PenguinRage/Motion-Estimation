@@ -9,7 +9,7 @@ int frame_number = 0;
 // Global Macro variables
 int WIDTH;
 int HEIGHT;
-int BLOCK_SIZE = 5;
+int BLOCK_SIZE = 9;
 
 void setup()
 {
@@ -75,7 +75,7 @@ void draw()
       for(int w = 0; w < WIDTH - BLOCK_SIZE; w += BLOCK_SIZE)
       {
         // for each of the block area in current frame
-        int current_block[] = macroblock_areas(w, h);
+        int current_block[] = calc_macroblock_areas(w, h);
 
         double min_ssd = -1;
 
@@ -87,7 +87,7 @@ void draw()
           for(int tmp_w = 0; tmp_w < WIDTH - BLOCK_SIZE; tmp_w += BLOCK_SIZE)
           {
             // for each of the other block area in next frame
-            color next_block[] = macroblock_areas(tmp_w, tmp_h);
+            color next_block[] = calc_macroblock_areas(tmp_w, tmp_h);
 
             // calulate ssd between each current block area and each next block area
             double tmp = calc_ssd(current_block, next_block);
@@ -130,19 +130,19 @@ void draw()
 
 
 // calculate ssd between two set of blocks
-double calc_ssd(int block1[], int block2[])
+double calc_ssd(color block1[], color block2[])
 {
   double ssd = 0;
   for(int h = 0; h < BLOCK_SIZE * BLOCK_SIZE; h++)
   {
     // get grey value
-    int grey1 = (int) red(grey_current.pixels[block1[h]]);
-    int grey2 = (int) red(grey_next.pixels[block2[h]]);
+    color current_grey = (color) red(grey_current.pixels[block1[h]]);
+    color next_grey = (color) red(grey_next.pixels[block2[h]]);
 
-    int diff = grey1 - grey2;
+    int diff = current_grey - next_grey;
 
     // if difference is too small, don't highlight
-    if(grey1 > 50) // For lighter backgrounds >, for darker backgrounds <
+    if(current_grey > 50)
     {
       return -10;
     }
@@ -153,7 +153,7 @@ double calc_ssd(int block1[], int block2[])
 }
 
 // for each block area, return the accordingly area pixel indexs on the frame
-color[] macroblock_areas(int x, int y)
+color[] calc_macroblock_areas(int x, int y)
 {
   color block[] = new color[BLOCK_SIZE * BLOCK_SIZE];
   int pos = 0;

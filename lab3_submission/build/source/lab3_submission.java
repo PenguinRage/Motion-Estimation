@@ -25,7 +25,7 @@ int frame_number = 0;
 // Global Macro variables
 int WIDTH;
 int HEIGHT;
-int BLOCK_SIZE = 5;
+int BLOCK_SIZE = 9;
 
 public void setup()
 {
@@ -91,21 +91,19 @@ public void draw()
       for(int w = 0; w < WIDTH - BLOCK_SIZE; w += BLOCK_SIZE)
       {
         // for each of the block area in current frame
-        int current_block[] = macroblock_areas(w, h);
-        //int current_center_x = w + BLOCK_SIZE / 2;
-        //int current_center_y = h + BLOCK_SIZE / 2;
+        int current_block[] = calc_macroblock_areas(w, h);
+
         double min_ssd = -1;
 
         // from all other block areas in next frame, find best match
         int best_match = 0;
-        //int best_match_x = 0;
-        //int best_match_y = 0;
+
         for(int tmp_h = 0; tmp_h < HEIGHT - BLOCK_SIZE; tmp_h += BLOCK_SIZE)
         {
           for(int tmp_w = 0; tmp_w < WIDTH - BLOCK_SIZE; tmp_w += BLOCK_SIZE)
           {
             // for each of the other block area in next frame
-            int next_block[] = macroblock_areas(tmp_w, tmp_h);
+            int next_block[] = calc_macroblock_areas(tmp_w, tmp_h);
 
             // calulate ssd between each current block area and each next block area
             double tmp = calc_ssd(current_block, next_block);
@@ -118,20 +116,14 @@ public void draw()
             {
               min_ssd = tmp;
               best_match = (tmp_h + BLOCK_SIZE / 2) * WIDTH + (tmp_w + BLOCK_SIZE / 2);
-              //best_match_x = tmp_w + BLOCK_SIZE / 2;
-              //best_match_y = tmp_h + BLOCK_SIZE / 2;
             }
             else if(tmp < min_ssd)         // if has smaller ssd, set to min_ssd
             {
               min_ssd = tmp;
               best_match = (tmp_h + BLOCK_SIZE / 2) * WIDTH + (tmp_w + BLOCK_SIZE / 2);
-              //best_match_x = tmp_w + BLOCK_SIZE / 2;
-              //best_match_y = tmp_h + BLOCK_SIZE / 2;
             }
 
             // highlight the best match
-            //stroke(255);
-            //line(current_center_x, current_center_y, best_match_x, best_match_y);
             current.pixels[best_match] = color(255);
           }
         }
@@ -160,13 +152,13 @@ public double calc_ssd(int block1[], int block2[])
   for(int h = 0; h < BLOCK_SIZE * BLOCK_SIZE; h++)
   {
     // get grey value
-    int grey1 = (int) red(grey_current.pixels[block1[h]]);
-    int grey2 = (int) red(grey_next.pixels[block2[h]]);
+    int current_grey = (int) red(grey_current.pixels[block1[h]]);
+    int next_grey = (int) red(grey_next.pixels[block2[h]]);
 
-    int diff = grey1 - grey2;
+    int diff = current_grey - next_grey;
 
     // if difference is too small, don't highlight
-    if(grey1 > 50) // For lighter backgrounds >, for darker backgrounds <
+    if(current_grey > 50)
     {
       return -10;
     }
@@ -177,7 +169,7 @@ public double calc_ssd(int block1[], int block2[])
 }
 
 // for each block area, return the accordingly area pixel indexs on the frame
-public int[] macroblock_areas(int x, int y)
+public int[] calc_macroblock_areas(int x, int y)
 {
   int block[] = new int[BLOCK_SIZE * BLOCK_SIZE];
   int pos = 0;
